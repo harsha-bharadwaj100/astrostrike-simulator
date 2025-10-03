@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import MapComponent from "./MapComponent";
 import SceneComponent from "./SceneComponent";
@@ -10,63 +9,59 @@ import {
 import "./App.css";
 
 function App() {
-  // State for data and UI mode
   const [asteroids, setAsteroids] = useState([]);
   const [selectedAsteroidId, setSelectedAsteroidId] = useState("");
   const [details, setDetails] = useState(null);
-  const [mode, setMode] = useState("preset"); // 'preset' or 'custom'
-
-  // State for custom asteroid inputs
+  const [mode, setMode] = useState("preset");
   const [customParams, setCustomParams] = useState({
     diameter: 100,
     velocity: 20,
   });
-
-  // State for simulation results and mitigation
   const [simResults, setSimResults] = useState(null);
   const [mitigation, setMitigation] = useState({
     isActive: false,
     velocityChange: 0,
   });
+  const [impactPosition, setImpactPosition] = useState({
+    lat: 20.5937,
+    lng: 78.9629,
+  });
+  const [impactOccurred, setImpactOccurred] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  // ✨ REMOVED unused 'loading' and 'error' states to fix warnings
 
-  // Fetch the list of asteroids for the dropdown
   useEffect(() => {
+    // setError was removed from here
     fetch("http://localhost:5000/api/neos")
       .then((res) => res.json())
       .then((data) => setAsteroids(data))
-      .catch((err) => setError("Could not fetch asteroid list."));
+      .catch((err) => console.error("Could not fetch asteroid list.", err));
   }, []);
 
-  // Fetch details when a user selects a preset asteroid
   useEffect(() => {
     if (mode !== "preset" || !selectedAsteroidId) {
       setDetails(null);
       setSimResults(null);
       return;
     }
-    setLoading(true);
+    // setLoading was removed from here
     fetch(`http://localhost:5000/api/neo/${selectedAsteroidId}`)
       .then((res) => res.json())
       .then((data) => {
         setDetails(data);
-        setLoading(false);
       })
-      .catch((err) => {
-        setError("Could not fetch details.");
-        setLoading(false);
-      });
+      .catch((err) => console.error("Could not fetch details.", err));
   }, [selectedAsteroidId, mode]);
 
+  // ✨ THIS FUNCTION WAS MISSING. IT IS NOW ADDED BACK.
   const handleCustomParamChange = (e) => {
     setCustomParams({ ...customParams, [e.target.name]: e.target.value });
   };
 
   const handleSimulate = () => {
-    let diameter, velocity;
+    setImpactOccurred(false);
 
+    let diameter, velocity;
     if (mode === "preset" && details) {
       diameter = details.estimated_diameter.meters.estimated_diameter_max;
       velocity =
@@ -75,21 +70,26 @@ function App() {
       diameter = customParams.diameter;
       velocity = customParams.velocity;
     }
-
     const energy = calculateImpactEnergy(diameter, velocity);
     const craterDiameterKm = calculateCraterDiameter(energy.joules);
     const seismicMagnitude = calculateSeismicMagnitude(energy.joules);
-
     setSimResults({
       energyMegatons: energy.megatons,
-      craterDiameterKm: craterDiameterKm,
-      seismicMagnitude: seismicMagnitude,
+      craterDiameterKm,
+      seismicMagnitude,
     });
-    setMitigation({ isActive: true, velocityChange: 0 }); // Activate mitigation on simulation
+    setMitigation({ isActive: true, velocityChange: 0 });
   };
 
   const handleMitigationChange = (e) => {
-    setMitigation({ ...mitigation, velocityChange: e.target.value });
+    setMitigation({
+      ...mitigation,
+      [e.target.name]: parseFloat(e.target.value),
+    });
+  };
+
+  const handleImpact = () => {
+    setImpactOccurred(true);
   };
 
   return (
@@ -189,13 +189,14 @@ function App() {
           <div className="mitigation-section">
             <h2>🌍 Defend Earth!</h2>
             <p>
-              Apply a small velocity change with a kinetic impactor to alter the
-              trajectory.
+              Apply an impulse to deflect the asteroid. Its orbit will update in
+              real-time.
             </p>
             <label>
-              Velocity Change (m/s): {mitigation.velocityChange}{" "}
+              Impulse (Δv m/s): {mitigation.velocityChange}
               <input
                 type="range"
+                name="velocityChange"
                 min="0"
                 max="10"
                 step="0.1"
@@ -205,21 +206,37 @@ function App() {
             </label>
             <p
               style={{
-                color: mitigation.velocityChange > 2 ? "lightgreen" : "yellow",
+                color: impactOccurred ? "#e94560" : "#28a745",
+                fontWeight: "bold",
+                fontSize: "1.2em",
               }}
             >
-              Trajectory shifts in real-time below.
+              SIMULATION STATUS:{" "}
+              {impactOccurred
+                ? "IMPACT DETECTED!"
+                : "COURSE IS CLEAR... FOR NOW."}
             </p>
           </div>
         )}
 
         <div id="visuals-section" className="visuals-section">
           <MapComponent
-            details={details}
             simResults={simResults}
-            mitigation={mitigation}
+            impactPosition={impactPosition}
+            setImpactPosition={setImpactPosition}
+            isHit={impactOccurred}
           />
-          <SceneComponent mitigation={mitigation} />
+          <div className="scene-container">
+            {mitigation.isActive && (
+              <SceneComponent
+                details={details}
+                customParams={customParams}
+                mode={mode}
+                mitigation={mitigation}
+                onImpact={handleImpact}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

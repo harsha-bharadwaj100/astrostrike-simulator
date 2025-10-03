@@ -139,3 +139,10 @@ h1 {
     width: 300px;
     margin-left: 10px;
 }
+
+.mitigation-controls {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 10px 0;
+}

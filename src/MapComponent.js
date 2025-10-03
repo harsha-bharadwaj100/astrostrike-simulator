@@ -1,52 +1,72 @@
 // src/MapComponent.js
 import React from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMapEvents,
+} from "react-leaflet";
+import L from "leaflet";
 
-const MapComponent = ({ details, simResults, mitigation }) => {
-  const impactPosition = [20.5937, 78.9629]; // Central India - a placeholder
-  const initialMiss = 2500000; // An arbitrary initial miss distance in meters for simulation
+// Fix for default marker icon issue with webpack
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
-  // Calculate the new impact point based on mitigation
-  const getImpactPosition = () => {
-    const deflection = mitigation.velocityChange * 100000; // Amplified for visual effect
-    const missDistance = initialMiss - deflection;
-    const degreesLatitudeShift = missDistance / 111139; // meters to degrees approx
-    return [impactPosition[0], impactPosition[1] + degreesLatitudeShift];
-  };
+const MapClickHandler = ({ setPosition }) => {
+  useMapEvents({
+    click(e) {
+      setPosition(e.latlng);
+    },
+  });
+  return null;
+};
 
-  const currentImpactPosition = mitigation.isActive
-    ? getImpactPosition()
-    : impactPosition;
-  const impactName = details ? details.name : "Custom Asteroid";
-  const craterRadiusMeters = simResults
-    ? simResults.craterDiameterKm * 1000
-    : 0;
+const MapComponent = ({
+  simResults,
+  impactPosition,
+  setImpactPosition,
+  isHit,
+}) => {
+  const impactName = simResults
+    ? "Simulated Impact Location"
+    : "Set Target Location";
+  const craterRadiusMeters =
+    isHit && simResults ? simResults.craterDiameterKm * 1000 : 0;
 
   return (
     <div className="map-container">
-      <h3>Impact Zone Simulation</h3>
+      <h3>Impact Zone Simulation (Click to set target)</h3>
       <MapContainer
-        center={currentImpactPosition}
+        center={impactPosition}
         zoom={3}
         style={{ height: "400px", width: "100%" }}
-        key={currentImpactPosition.toString()}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        <MapClickHandler setPosition={setImpactPosition} />
 
-        {simResults && (
-          <>
-            <Marker position={currentImpactPosition}>
-              <Popup>{impactName} Impact Point</Popup>
-            </Marker>
-            <Circle
-              center={currentImpactPosition}
-              radius={craterRadiusMeters}
-              pathOptions={{ color: "red", fillColor: "red", fillOpacity: 0.3 }}
-            />
-          </>
+        <Marker position={impactPosition}>
+          <Popup>{impactName}</Popup>
+        </Marker>
+
+        {isHit && craterRadiusMeters > 0 && (
+          <Circle
+            center={impactPosition}
+            radius={craterRadiusMeters}
+            pathOptions={{
+              color: "#e94560",
+              fillColor: "#e94560",
+              fillOpacity: 0.4,
+            }}
+          />
         )}
       </MapContainer>
     </div>
