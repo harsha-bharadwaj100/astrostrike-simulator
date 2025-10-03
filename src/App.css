@@ -84,3 +84,58 @@ h1 {
 .error-message {
   color: #e94560;
 }
+
+/* src/App.css - ADD these styles to the bottom of the file */
+
+.mode-selector {
+  margin-bottom: 20px;
+}
+
+.mode-selector label {
+  margin: 0 15px;
+  cursor: pointer;
+}
+
+.custom-params {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.custom-params input {
+  width: 100px;
+  padding: 8px;
+  background-color: #1f4068;
+  border: 1px solid #0f3460;
+  color: white;
+  border-radius: 4px;
+}
+
+.simulate-button {
+  background-color: #e94560;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.simulate-button:hover {
+  background-color: #ff667d;
+}
+
+.results-section, .mitigation-section {
+  background-color: #16213e;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.mitigation-section input[type="range"] {
+    width: 300px;
+    margin-left: 10px;
+}
