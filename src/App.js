@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MapComponent from "./MapComponent";
 import SceneComponent from "./SceneComponent";
+import ImpactReport from "./ImpactReport";
 import {
   calculateImpactEnergy,
   calculateCraterDiameter,
@@ -27,11 +28,10 @@ function App() {
     lng: 78.9629,
   });
   const [impactOccurred, setImpactOccurred] = useState(false);
-
-  // ✨ REMOVED unused 'loading' and 'error' states to fix warnings
+  // ✨ REVERTED: State is now controlled by a manual checkbox again
+  const [isOceanImpact, setIsOceanImpact] = useState(false);
 
   useEffect(() => {
-    // setError was removed from here
     fetch("http://localhost:5000/api/neos")
       .then((res) => res.json())
       .then((data) => setAsteroids(data))
@@ -44,7 +44,6 @@ function App() {
       setSimResults(null);
       return;
     }
-    // setLoading was removed from here
     fetch(`http://localhost:5000/api/neo/${selectedAsteroidId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -53,14 +52,12 @@ function App() {
       .catch((err) => console.error("Could not fetch details.", err));
   }, [selectedAsteroidId, mode]);
 
-  // ✨ THIS FUNCTION WAS MISSING. IT IS NOW ADDED BACK.
   const handleCustomParamChange = (e) => {
     setCustomParams({ ...customParams, [e.target.name]: e.target.value });
   };
 
   const handleSimulate = () => {
     setImpactOccurred(false);
-
     let diameter, velocity;
     if (mode === "preset" && details) {
       diameter = details.estimated_diameter.meters.estimated_diameter_max;
@@ -73,6 +70,8 @@ function App() {
     const energy = calculateImpactEnergy(diameter, velocity);
     const craterDiameterKm = calculateCraterDiameter(energy.joules);
     const seismicMagnitude = calculateSeismicMagnitude(energy.joules);
+
+    // ✨ REVERTED: Removed energyDistribution from the results
     setSimResults({
       energyMegatons: energy.megatons,
       craterDiameterKm,
@@ -97,8 +96,8 @@ function App() {
       <header className="App-header">
         <h1>AstroStrike Simulator ☄️</h1>
         <p>
-          Analyze potential impacts from Near-Earth Objects or create your own
-          scenario.
+          A data-driven tool for modeling asteroid impact scenarios,
+          consequences, and mitigation strategies.
         </p>
       </header>
 
@@ -111,7 +110,7 @@ function App() {
               checked={mode === "preset"}
               onChange={() => setMode("preset")}
             />{" "}
-            Select Preset Asteroid
+            Select Real NEO
           </label>
           <label>
             <input
@@ -123,7 +122,6 @@ function App() {
             Create Custom Scenario
           </label>
         </div>
-
         {mode === "preset" ? (
           <select
             onChange={(e) => setSelectedAsteroidId(e.target.value)}
@@ -140,7 +138,7 @@ function App() {
         ) : (
           <div className="custom-params">
             <label>
-              Diameter (meters):{" "}
+              Diameter (m):
               <input
                 type="number"
                 name="diameter"
@@ -149,7 +147,7 @@ function App() {
               />
             </label>
             <label>
-              Velocity (km/s):{" "}
+              Velocity (km/s):
               <input
                 type="number"
                 name="velocity"
@@ -167,7 +165,7 @@ function App() {
       <div className="main-content">
         {simResults && (
           <div className="results-section">
-            <h2>Simulation Results</h2>
+            <h2>Initial Conditions & Potential Effects</h2>
             <div className="details-grid">
               <p>
                 <strong>Impact Energy:</strong>{" "}
@@ -182,15 +180,34 @@ function App() {
                 {simResults.seismicMagnitude.toFixed(2)} (Richter Scale)
               </p>
             </div>
+            {/* ✨ REVERTED: Checkbox is back */}
+            <div className="ocean-impact-toggle">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isOceanImpact}
+                  onChange={(e) => setIsOceanImpact(e.target.checked)}
+                />
+                Simulate as Ocean Impact (for Tsunami Analysis)
+              </label>
+            </div>
           </div>
+        )}
+
+        {impactOccurred && simResults && (
+          <ImpactReport
+            simResults={simResults}
+            impactPosition={impactPosition}
+            isOceanImpact={isOceanImpact}
+          />
         )}
 
         {mitigation.isActive && (
           <div className="mitigation-section">
-            <h2>🌍 Defend Earth!</h2>
+            <h2>🌍 Planetary Defense Center</h2>
             <p>
-              Apply an impulse to deflect the asteroid. Its orbit will update in
-              real-time.
+              Apply an impulse to deflect the asteroid. The orbit will update in
+              real-time based on gravitational physics.
             </p>
             <label>
               Impulse (Δv m/s): {mitigation.velocityChange}
@@ -225,6 +242,7 @@ function App() {
             impactPosition={impactPosition}
             setImpactPosition={setImpactPosition}
             isHit={impactOccurred}
+            isOceanImpact={isOceanImpact}
           />
           <div className="scene-container">
             {mitigation.isActive && (

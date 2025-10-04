@@ -146,3 +146,5 @@ h1 {
     gap: 30px;
     margin: 10px 0;
 }
+
+.report-item-full { grid-column: 1 / -1; }

@@ -2,18 +2,16 @@
 export const G = 6.6743e-11; // Gravitational constant
 export const M_EARTH = 5.972e24; // Mass of Earth in kg
 
-// Scaling factors to make the simulation visible and manageable
-const DISTANCE_SCALE = 1 / 3e6; // 1 unit in 3D space = 3,000 km in real life
-const TIME_SCALE = 60 * 30; // 1 second of real time = 30 minutes of simulation time
+const DISTANCE_SCALE = 1 / 3e6;
+const TIME_SCALE = 60 * 30;
 
-// Initial state for the Earth (which is static at the origin in our scene)
 export const earth = {
   mass: M_EARTH,
   position: { x: 0, y: 0, z: 0 },
 };
 
-// --- IMPACT CALCULATION FUNCTIONS (retained for the 2D panel) ---
-const DENSITY_ASTEROID = 3000; // kg/m^3 (a reasonable average for stony asteroids)
+// --- IMPACT CALCULATION FUNCTIONS ---
+const DENSITY_ASTEROID = 3000;
 const JOULES_PER_MEGATON_TNT = 4.184e15;
 
 export const calculateImpactEnergy = (diameterMeters, velocityKps) => {
@@ -39,44 +37,68 @@ export const calculateSeismicMagnitude = (energyJoules) => {
   return magnitude;
 };
 
+// --- NEW FUNCTIONS ---
+export const calculateEnergyDistribution = (energyMegatons, velocityKps) => {
+  // This model simulates how energy shifts from airburst to ground impact.
+  // We create a "ground coupling" factor. High velocity & energy = high coupling.
+  const velocityFactor = Math.min(velocityKps / 40, 1); // Normalize velocity up to 40 km/s
+  const energyFactor = Math.min(energyMegatons / 100000, 1); // Normalize energy up to 100,000 MT
+
+  // Combine factors, giving more weight to energy
+  const groundCoupling = Math.min(
+    0.1 + velocityFactor * 0.3 + energyFactor * 0.6,
+    1
+  );
+
+  // Partition energy based on this coupling factor
+  const seismic = 5 + 25 * groundCoupling;
+  const cratering = 2 + 20 * groundCoupling;
+  const thermal = 40 - 20 * groundCoupling;
+  const airBlast = 100 - seismic - cratering - thermal;
+
+  return { airBlast, thermal, seismic, cratering };
+};
+
+export const haversineDistance = (coords1, coords2) => {
+  const toRad = (x) => (x * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(coords2.lat - coords1.lat);
+  const dLon = toRad(coords2.lng - coords1.lng);
+  const lat1 = toRad(coords1.lat);
+  const lat2 = toRad(coords2.lat);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 // --- The core physics update function ---
 export const updateAsteroid = (asteroid, dt) => {
-  // 1. Calculate distance and direction vector from asteroid to Earth
   const dx = earth.position.x - asteroid.position.x;
   const dy = earth.position.y - asteroid.position.y;
   const dz = earth.position.z - asteroid.position.z;
-
   const distanceSq = dx * dx + dy * dy + dz * dz;
   const distance = Math.sqrt(distanceSq);
-
   const forceDirection = {
     x: dx / distance,
     y: dy / distance,
     z: dz / distance,
   };
-
-  // 2. Calculate gravitational force magnitude
   const realDistance = distance / DISTANCE_SCALE;
   const forceMagnitude =
     (G * earth.mass * asteroid.mass) / (realDistance * realDistance);
-
-  // 3. Calculate acceleration vector
   const acceleration = {
     x: (forceDirection.x * forceMagnitude) / asteroid.mass,
     y: (forceDirection.y * forceMagnitude) / asteroid.mass,
     z: (forceDirection.z * forceMagnitude) / asteroid.mass,
   };
-
-  // 4. Update velocity (scaled for time)
   const timeStep = dt * TIME_SCALE;
   asteroid.velocity.x += acceleration.x * timeStep * DISTANCE_SCALE;
   asteroid.velocity.y += acceleration.y * timeStep * DISTANCE_SCALE;
   asteroid.velocity.z += acceleration.z * timeStep * DISTANCE_SCALE;
-
-  // 5. Update position
   asteroid.position.x += asteroid.velocity.x * timeStep;
   asteroid.position.y += asteroid.velocity.y * timeStep;
   asteroid.position.z += asteroid.velocity.z * timeStep;
-
   return asteroid;
 };

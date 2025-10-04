@@ -1,4 +1,3 @@
-// src/MapComponent.js
 import React from "react";
 import {
   MapContainer,
@@ -10,7 +9,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 
-// Fix for default marker icon issue with webpack
+// This fix for the default marker icon should remain
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
@@ -32,16 +31,15 @@ const MapComponent = ({
   impactPosition,
   setImpactPosition,
   isHit,
+  isOceanImpact,
 }) => {
-  const impactName = simResults
-    ? "Simulated Impact Location"
-    : "Set Target Location";
-  const craterRadiusMeters =
+  const impactName = simResults ? "Simulated Impact" : "Set Target Location";
+  const craterRadius =
     isHit && simResults ? simResults.craterDiameterKm * 1000 : 0;
 
   return (
     <div className="map-container">
-      <h3>Impact Zone Simulation (Click to set target)</h3>
+      <h3>Impact Zone Analysis (Click to set target)</h3>
       <MapContainer
         center={impactPosition}
         zoom={3}
@@ -49,24 +47,46 @@ const MapComponent = ({
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution="&copy; OpenStreetMap"
         />
         <MapClickHandler setPosition={setImpactPosition} />
-
         <Marker position={impactPosition}>
           <Popup>{impactName}</Popup>
         </Marker>
 
-        {isHit && craterRadiusMeters > 0 && (
-          <Circle
-            center={impactPosition}
-            radius={craterRadiusMeters}
-            pathOptions={{
-              color: "#e94560",
-              fillColor: "#e94560",
-              fillOpacity: 0.4,
-            }}
-          />
+        {isHit && craterRadius > 0 && (
+          <>
+            {/* ✨ REMOVED: The large blue tsunami circle is now gone */}
+
+            {/* Seismic "ShakeMap" Rings */}
+            <Circle
+              center={impactPosition}
+              radius={craterRadius * 8}
+              pathOptions={{
+                color: "yellow",
+                fillColor: "yellow",
+                fillOpacity: 0.2,
+              }}
+            />
+            <Circle
+              center={impactPosition}
+              radius={craterRadius * 3}
+              pathOptions={{
+                color: "orange",
+                fillColor: "orange",
+                fillOpacity: 0.3,
+              }}
+            />
+            <Circle
+              center={impactPosition}
+              radius={craterRadius}
+              pathOptions={{
+                color: "#e94560",
+                fillColor: "#e94560",
+                fillOpacity: 0.5,
+              }}
+            />
+          </>
         )}
       </MapContainer>
     </div>
