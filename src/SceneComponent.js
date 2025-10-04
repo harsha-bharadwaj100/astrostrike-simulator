@@ -1,19 +1,75 @@
 // src/SceneComponent.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars, Line, Sphere } from "@react-three/drei";
+import { OrbitControls, Stars, Line, Sphere, Decal } from "@react-three/drei";
 import * as THREE from "three";
 import { updateAsteroid } from "./utils/physics";
 import Earth from "./Earth";
 
 const TRAIL_LENGTH = 200;
 
-// ✨ New inner component to hold all the simulation logic and objects
-// This component will be placed INSIDE the Canvas
+// This component will generate the crater texture and project it onto the Earth
+const ImpactCrater = ({ earthRef, impactVector, craterSize }) => {
+  // Generate a dynamic crater texture using a canvas
+  const craterTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+
+    const gradient = context.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      size / 2
+    );
+
+    // Create a crater-like gradient (dark center, bright rim, fading out)
+    gradient.addColorStop(0, "rgba(0,0,0,0.8)");
+    gradient.addColorStop(0.6, "rgba(50,50,50,0.7)");
+    gradient.addColorStop(0.8, "rgba(200,200,200,0.4)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, size, size);
+
+    return new THREE.CanvasTexture(canvas);
+  }, []);
+
+  // Calculate the rotation so the decal faces away from the center of the Earth
+  const rotation = useMemo(() => {
+    const matrix = new THREE.Matrix4().lookAt(
+      impactVector,
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(0, 1, 0) // Up vector
+    );
+    return new THREE.Euler().setFromRotationMatrix(matrix);
+  }, [impactVector]);
+
+  // Scale the decal based on the crater diameter
+  // Earth's radius is 2, so we scale the decal relative to that.
+  const scale = craterSize / 1000; // A rough scaling factor, adjust as needed
+
+  return (
+    <Decal
+      position={impactVector}
+      rotation={rotation}
+      scale={[scale, scale, scale]}
+      map={craterTexture}
+      polygonOffset
+      polygonOffsetFactor={-1} // Prevents z-fighting
+    />
+  );
+};
+
+// The main simulation logic
 const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
   const [asteroid, setAsteroid] = useState(null);
   const [trail, setTrail] = useState([]);
-  const [isSimulating, setIsSimulating] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(true);
 
   // This effect initializes or resets the simulation
   useEffect(() => {
@@ -38,9 +94,9 @@ const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
 
     const newAsteroid = {
       mass: mass,
-      position: { x: -30, y: 2.2, z: 0 }, // Start far away
+      position: { x: -30, y: 2.2, z: 0 },
       velocity: {
-        x: (initialVelocity.x * 1000) / 3e6, // Scale velocity
+        x: (initialVelocity.x * 1000) / 3e6,
         y: (initialVelocity.y * 1000) / 3e6,
         z: (initialVelocity.z * 1000) / 3e6,
       },
@@ -58,18 +114,17 @@ const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
 
   // This effect applies the impulse from the mitigation slider
   useEffect(() => {
-    if (mitigation.isActive && asteroid && mitigation.velocityChange > 0) {
+    if (mitigation.isActive && asteroid) {
       setAsteroid((prev) => {
         const newVel = { ...prev.velocity };
-        const impulseMagnitude = mitigation.velocityChange * 1e-4;
-        newVel.y += impulseMagnitude;
+        const impulseMagnitude = mitigation.velocityChange * 1e-5;
+        newVel.y = impulseMagnitude; // Set velocity directly instead of adding
         return { ...prev, velocity: newVel };
       });
-      mitigation.velocityChange = 0;
     }
-  }, [mitigation, asteroid]);
+  }, [mitigation.velocityChange]);
 
-  // The main simulation loop, now correctly inside a component that will be within Canvas
+  // The main simulation loop
   useFrame((state, delta) => {
     if (isSimulating && asteroid) {
       const updatedAsteroid = updateAsteroid({ ...asteroid }, delta);
@@ -79,9 +134,11 @@ const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
         updatedAsteroid.position.z
       );
 
+      // Earth radius is 2, so impact occurs when distance is less than 2
       if (posVec.length() < 2) {
         setIsSimulating(false);
-        onImpact();
+        // Call onImpact with the final position vector on the Earth's surface
+        onImpact(posVec.normalize().multiplyScalar(2));
       } else {
         setAsteroid(updatedAsteroid);
         setTrail((currentTrail) => {
@@ -92,10 +149,9 @@ const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
     }
   });
 
-  // Return the 3D objects to be rendered
   return (
     <>
-      {asteroid && (
+      {asteroid && isSimulating && (
         <Sphere
           position={[
             asteroid.position.x,
@@ -107,16 +163,31 @@ const Simulation = ({ details, customParams, mode, mitigation, onImpact }) => {
           <meshStandardMaterial color="gray" />
         </Sphere>
       )}
-      {trail.length > 1 && (
+      {trail.length > 1 && isSimulating && (
         <Line points={trail} color="#e94560" lineWidth={2} />
       )}
     </>
   );
 };
 
-// ✨ The main exported component is now much simpler.
-// It just sets up the Canvas and renders the Simulation component inside it.
+// The main exported component that sets up the scene
 const SceneComponent = (props) => {
+  const { onImpact, simResults, impactOccurred } = props;
+  const earthRef = useRef();
+  const [impactVector, setImpactVector] = useState(null);
+
+  // Reset impact vector when a new simulation starts
+  useEffect(() => {
+    if (!props.mitigation.isActive) {
+      setImpactVector(null);
+    }
+  }, [props.mitigation.isActive]);
+
+  const handleImpact = (vector) => {
+    onImpact(); // This tells App.js that an impact happened
+    setImpactVector(vector); // Store the 3D vector of the impact
+  };
+
   return (
     <Canvas camera={{ position: [0, 15, 30] }}>
       <Stars
@@ -130,9 +201,17 @@ const SceneComponent = (props) => {
       <ambientLight intensity={1} />
       <pointLight position={[100, 100, 100]} intensity={2} />
       <OrbitControls />
-      <Earth />
-      <Simulation {...props} />{" "}
-      {/* Pass all the props down to the inner component */}
+      <Earth ref={earthRef}>
+        {/* Conditionally render the crater decal on the Earth mesh */}
+        {impactOccurred && impactVector && simResults && (
+          <ImpactCrater
+            earthRef={earthRef}
+            impactVector={impactVector}
+            craterSize={simResults.craterDiameterKm}
+          />
+        )}
+      </Earth>
+      <Simulation {...props} onImpact={handleImpact} />
     </Canvas>
   );
 };

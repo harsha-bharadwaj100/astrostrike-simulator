@@ -30,7 +30,6 @@ function App() {
   const [impactOccurred, setImpactOccurred] = useState(false);
   // ✨ REVERTED: State is now controlled by a manual checkbox again
   const [isOceanImpact, setIsOceanImpact] = useState(false);
-
   useEffect(() => {
     fetch("http://localhost:5000/api/neos")
       .then((res) => res.json())
@@ -83,7 +82,7 @@ function App() {
   const handleMitigationChange = (e) => {
     setMitigation({
       ...mitigation,
-      [e.target.name]: parseFloat(e.target.value),
+      velocityChange: parseFloat(e.target.value),
     });
   };
 
@@ -215,7 +214,7 @@ function App() {
                 type="range"
                 name="velocityChange"
                 min="0"
-                max="10"
+                max="100"
                 step="0.1"
                 value={mitigation.velocityChange}
                 onChange={handleMitigationChange}
