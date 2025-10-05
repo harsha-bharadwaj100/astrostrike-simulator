@@ -148,3 +148,47 @@ h1 {
 }
 
 .report-item-full { grid-column: 1 / -1; }
+
+/* src/App.css */
+/* ... existing styles ... */
+
+.parameter-section {
+  background-color: #1a1a2e; /* Match main background */
+  padding: 10px 20px;
+  border: 1px solid #0f3460;
+}
+
+.parameters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .parameters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.params-column h3 {
+  color: #e94560;
+  border-bottom: 1px solid #3a3a5a;
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.params-column p {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  background-color: transparent; /* Override default p background */
+  padding: 0;
+}
+
+.ocean-impact-toggle {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #3a3a5a;
+}

@@ -1,0 +1,68 @@
+/* src/Tooltip.css */
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+/* The small info icon */
+.tooltip-icon {
+  margin-left: 8px;
+  font-size: 0.85em;
+  color: #a0a0a0;
+  border: 1px solid #a0a0a0;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  line-height: 1;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tooltip-container:hover .tooltip-icon {
+  color: #e94560;
+  border-color: #e94560;
+}
+
+/* The tooltip text box */
+.tooltip-text {
+  visibility: hidden;
+  width: 240px;
+  background-color: #1f4068;
+  color: #e0e0e0;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 10;
+  bottom: 140%;
+  left: 50%;
+  margin-left: -120px; /* Use half of the width to center */
+  opacity: 0;
+  transition: opacity 0.3s;
+  border: 1px solid #0f3460;
+  font-size: 0.9em;
+  font-weight: normal;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Arrow for the tooltip */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1f4068 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
