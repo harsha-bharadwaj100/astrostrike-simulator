@@ -39,12 +39,12 @@ To run this project locally, you will need to run both the backend server and th
 ### **Backend Setup**
 
 1. **Navigate to the backend directory:**  
-   Bash  
+   ```Bash  
    cd backend
 
 2. Install dependencies:  
    It is recommended to use a virtual environment.  
-   Bash  
+   ```Bash  
    pip install Flask flask-cors requests python-dotenv
 
 3. **Set up your NASA API Key:**  
@@ -54,22 +54,21 @@ To run this project locally, you will need to run both the backend server and th
      NASA\_API\_KEY=YOUR\_API\_KEY\_HERE
 
 4. **Run the backend server:**  
-   Bash  
+   ```Bash  
    flask run
 
-   The server will start on http://localhost:5000.
+  The server will start on http://localhost:5000.
 
 ### **Frontend Setup**
 
 1. **Navigate to the root directory and install dependencies:**  
-   Bash  
+   ```Bash  
    npm install
 
 2. **Start the frontend development server:**  
-   Bash  
-   npm start
-
-   The application will open in your browser at http://localhost:3000.
+    ```Bash  
+    npm start
+  The application will open in your browser at http://localhost:3000.
 
 ## **Future Ideas**
 
