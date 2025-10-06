@@ -4,7 +4,7 @@ An interactive web application developed for the **2025 NASA Space Apps Challeng
 
 ## **Project Demo**
 
-*\[Link to slides\](https://docs.google.com/presentation/d/1KaMSEz0\_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?usp=sharing\&ouid=103494869491400990983\&rtpof=true\&sd=true)*
+*[Link to slides](https://docs.google.com/presentation/d/1KaMSEz0\_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?usp=sharing\&ouid=103494869491400990983\&rtpof=true\&sd=true)*
 
 ---
 
