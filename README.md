@@ -1,70 +1,90 @@
-# Getting Started with Create React App
+AstroStrike Simulator ☄️
+An interactive web application developed for the 2025 NASA Space Apps Challenge ("Meteor Madness" challenge). AstroStrike Simulator transforms real NASA data into an engaging, educational tool for modeling asteroid impact scenarios, understanding their consequences, and exploring potential mitigation strategies.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Demo
+[[Link to the Slides](https://docs.google.com/presentation/d/1KaMSEz0_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?usp=sharing&ouid=103494869491400990983&rtpof=true&sd=true)]
 
-## Available Scripts
+Features
+Real-Time NASA Data: Select from a list of actual Near-Earth Objects (NEOs), with orbital and physical data fetched directly from NASA's NEO API.
 
-In the project directory, you can run:
+Custom Scenarios: Create your own "what-if" scenarios by defining an asteroid's diameter and velocity.
 
-### `npm start`
+Dynamic 3D Visualization: Watch the asteroid's trajectory in a real-time 3D simulation powered by React Three Fiber, showing its gravitational interaction with Earth.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Interactive Impact Map: Set a target location on a 2D map and visualize the geographic scale of the crater and seismic shockwaves upon impact.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Post-Impact Analysis: Receive an immediate report detailing:
 
-### `npm test`
+Seismic Magnitude: Compared against real-world events in a clear bar chart.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Tsunami Risk: For ocean impacts, the tool identifies major coastal cities at risk and estimates tsunami travel time.
 
-### `npm run build`
+Planetary Defense Simulator: Take control and attempt to deflect the asteroid by applying a "delta-v" impulse, with instant visual feedback on the outcome.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Educational Tooltips: Learn about complex astronomical terms like "eccentricity" and "semi-major axis" through integrated tooltips.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+How It Works
+The application is built with a decoupled frontend and backend. The React frontend provides the user interface and visualizations, while a Python Flask server acts as a simple proxy to fetch data from the NASA NEO API, bypassing CORS issues and hiding the API key.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+When a user selects an asteroid or defines custom parameters, the frontend calculates the potential impact energy, crater size, and seismic magnitude using established physics formulas. This data is then passed to the various visualization components to render the simulation and reports.
 
-### `npm run eject`
+Technology Stack
+Frontend: React, React Three Fiber (for Three.js), Chart.js, Leaflet
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Backend: Python (Flask), Requests
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Data Source: NASA Near-Earth Object (NEO) Web Service API
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Setup and Installation
+To run this project locally, you will need to run both the backend server and the frontend client.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Backend Setup
+Navigate to the backend directory:
 
-## Learn More
+Bash
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+cd backend
+Install dependencies:
+It is recommended to use a virtual environment.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Bash
 
-### Code Splitting
+pip install Flask flask-cors requests python-dotenv
+Set up your NASA API Key:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Get a free API key from api.nasa.gov.
 
-### Analyzing the Bundle Size
+Create a file named .env inside the backend folder.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Add your API key to the .env file like this:
 
-### Making a Progressive Web App
+NASA_API_KEY=YOUR_API_KEY_HERE
+Run the backend server:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Bash
 
-### Advanced Configuration
+flask run
+The server will start on http://localhost:5000.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Frontend Setup
+Navigate to the root directory and install dependencies:
 
-### Deployment
+Bash
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+npm install
+Start the frontend development server:
 
-### `npm run build` fails to minify
+Bash
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+npm start
+The application will open in your browser at http://localhost:3000.
+
+Future Ideas
+
+Incorporate population density data to estimate the potential human impact of a strike.
+
+Expand the Planetary Defense Center with more mitigation strategies (e.g., gravity tractors, laser ablation).
+
+Create a "Mission Mode" with specific challenges and objectives for users to complete.
+
+This project was created for the 2025 NASA Space Apps Challenge. You can view the "Meteor Madness" challenge details here.
