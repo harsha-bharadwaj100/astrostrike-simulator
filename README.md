@@ -1,6 +1,8 @@
 # **☄️ AstroStrike Simulator**
 
-## **Global Nominee — NASA International Space Apps Challenge 2025** ("Meteor Madness" challenge)
+## **Global Nominee — NASA International Space Apps Challenge 2025** 
+
+**("Meteor Madness" challenge)**
 
 **AstroStrike Simulator** is an interactive, data-driven web application that transforms real NASA Near-Earth Object (NEO) data into an intuitive platform for asteroid impact simulation, consequence analysis, and planetary defense exploration.
 
