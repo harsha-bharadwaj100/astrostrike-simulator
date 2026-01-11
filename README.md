@@ -6,7 +6,7 @@
 
 ## **Project Demo**
 
-*[Link to Project](https://www.spaceappschallenge.org/2025/find-a-team/phoneix-trio/?tab=project)*
+*[Link to Project](https://www.spaceappschallenge.org/2025/find-a-team/phoneix-trio/?tab=project)*<br>
 *[Link to slides](https://docs.google.com/presentation/d/1KaMSEz0\_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?*usp=sharing\&ouid=103494869491400990983\&rtpof=true\&sd=true)*
 
 ---
