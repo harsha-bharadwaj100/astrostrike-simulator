@@ -1,24 +1,39 @@
-# **AstroStrike Simulator ☄️**
+# **☄️ AstroStrike Simulator**
 
-An interactive web application developed for the **2025 NASA Space Apps Challenge** ("Meteor Madness" challenge). AstroStrike Simulator transforms real NASA data into an engaging, educational tool for modeling asteroid impact scenarios, understanding their consequences, and exploring potential mitigation strategies.
+**Global Nominee — NASA International Space Apps Challenge 2025** ("Meteor Madness" challenge)
+
+**AstroStrike Simulator** is an interactive, data-driven web application that transforms real NASA Near-Earth Object (NEO) data into an intuitive platform for asteroid impact simulation, consequence analysis, and planetary defense exploration.
 
 ## **Project Demo**
 
-*[Link to slides](https://docs.google.com/presentation/d/1KaMSEz0\_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?usp=sharing\&ouid=103494869491400990983\&rtpof=true\&sd=true)*
+*[Link to Project](https://www.spaceappschallenge.org/2025/find-a-team/phoneix-trio/?tab=project)*
+*[Link to slides](https://docs.google.com/presentation/d/1KaMSEz0\_Xn7VqqU2F-L7Ve9e9MUnwdKB/edit?*usp=sharing\&ouid=103494869491400990983\&rtpof=true\&sd=true)*
 
 ---
 
-## **Features**
+## **Core Features**
 
-* **Real-Time NASA Data:** Select from a list of actual Near-Earth Objects (NEOs), with orbital and physical data fetched directly from NASA's NEO API.  
-* **Custom Scenarios:** Create your own "what-if" scenarios by defining an asteroid's diameter and velocity.  
-* **Dynamic 3D Visualization:** Watch the asteroid's trajectory in a real-time 3D simulation powered by React Three Fiber, showing its gravitational interaction with Earth.  
-* **Interactive Impact Map:** Set a target location on a 2D map and visualize the geographic scale of the crater and seismic shockwaves upon impact.  
-* **Post-Impact Analysis:** Receive an immediate report detailing:  
+1️⃣ **Real NASA Asteroid Data:**
+* Live integration with NASA’s Near-Earth Object (NEO) Web Service API
+* Select from actual cataloged asteroids with authentic orbital and physical parameters
+2️⃣ **Custom Impact Scenarios:**
+* Define hypothetical asteroids by diameter and velocity
+* Instantly simulate “what-if” strike scenarios
+3️⃣ **Dynamic 3D Orbital Simulation:**
+* Interactive 3D Earth–asteroid visualization using React Three Fiber
+* Observe approach trajectories and gravitational interaction in real time
+4️⃣ **Interactive Impact Map:**
+* Select impact locations on a 2D world map
+* Visualize crater radius and seismic shockwave spread geographically
+5️⃣ **Post-Impact Analysis Dashboard:** Receive an immediate report detailing:  
   * **Seismic Magnitude:** Compared against real-world events in a clear bar chart.  
   * **Tsunami Risk:** For ocean impacts, the tool identifies major coastal cities at risk and estimates tsunami travel time.  
-* **Planetary Defense Simulator:** Take control and attempt to deflect the asteroid by applying a "delta-v" impulse, with instant visual feedback on the outcome.  
-* **Educational Tooltips:** Learn about complex astronomical terms like "eccentricity" and "semi-major axis" through integrated tooltips.
+6️⃣ **Planetary Defense Simulator:**
+* Apply a controlled delta-v impulse to the asteroid
+* Immediately observe orbital deviation outcomes
+* Introduces core concepts of asteroid deflection and mitigation
+7️⃣ **Educational Tooltips:**
+* Learn about complex astronomical terms like "eccentricity" and "semi-major axis" through integrated tooltips.
 
 ## **How It Works**
 
@@ -70,12 +85,22 @@ To run this project locally, you will need to run both the backend server and th
     npm start
   The application will open in your browser at http://localhost:3000.
 
-## **Future Ideas**
+## **Future Scope & Enhancements**
 
-* Incorporate population density data to estimate the potential human impact of a strike.  
-* Expand the Planetary Defense Center with more mitigation strategies (e.g., gravity tractors, laser ablation).  
-* Create a "Mission Mode" with specific challenges and objectives for users to complete.
+* Integration of population density data to estimate human impact
+* Expand the Planetary Defense Center with more mitigation strategies (e.g., gravity tractors, laser ablation)
+* Create a "Mission Mode" with scenario-based challenges for educational use
+* Performance optimization for large-scale simulations
 
 ---
 
-This project was created for the **2025 NASA Space Apps Challenge**. You can view the "Meteor Madness" challenge details [here](https://www.spaceappschallenge.org/2025/challenges/meteor-madness/).
+## **Recognition & Credits**
+
+**Team Phoenix Trio**
+* Harsha Bharadwaj — Team Lead
+* Guru Patil
+* Thrisha Rajesh
+
+## **Challenge Reference**
+
+[NASA Space Apps Challenge — Meteor Madness](https://www.spaceappschallenge.org/2025/challenges/meteor-madness/)
