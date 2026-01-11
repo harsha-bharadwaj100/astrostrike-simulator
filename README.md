@@ -15,23 +15,29 @@
 
 1️⃣ **Real NASA Asteroid Data:**
 * Live integration with NASA’s Near-Earth Object (NEO) Web Service API
-* Select from actual cataloged asteroids with authentic orbital and physical parameters<br>
+* Select from actual cataloged asteroids with authentic orbital and physical parameters
+
 2️⃣ **Custom Impact Scenarios:**
 * Define hypothetical asteroids by diameter and velocity
-* Instantly simulate “what-if” strike scenarios<br>
+* Instantly simulate “what-if” strike scenarios
+
 3️⃣ **Dynamic 3D Orbital Simulation:**
 * Interactive 3D Earth–asteroid visualization using React Three Fiber
-* Observe approach trajectories and gravitational interaction in real time<br>
+* Observe approach trajectories and gravitational interaction in real time
+  
 4️⃣ **Interactive Impact Map:**
 * Select impact locations on a 2D world map
-* Visualize crater radius and seismic shockwave spread geographically<br>
+* Visualize crater radius and seismic shockwave spread geographically
+  
 5️⃣ **Post-Impact Analysis Dashboard:** Receive an immediate report detailing:  
   * **Seismic Magnitude:** Compared against real-world events in a clear bar chart.  
-  * **Tsunami Risk:** For ocean impacts, the tool identifies major coastal cities at risk and estimates tsunami travel time.<br>
+  * **Tsunami Risk:** For ocean impacts, the tool identifies major coastal cities at risk and estimates tsunami travel time.
+    
 6️⃣ **Planetary Defense Simulator:**
 * Apply a controlled delta-v impulse to the asteroid
 * Immediately observe orbital deviation outcomes
-* Introduces core concepts of asteroid deflection and mitigation<br>
+* Introduces core concepts of asteroid deflection and mitigation
+  
 7️⃣ **Educational Tooltips:**
 * Learn about complex astronomical terms like "eccentricity" and "semi-major axis" through integrated tooltips.
 
